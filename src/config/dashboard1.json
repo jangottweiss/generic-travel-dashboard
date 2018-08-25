@@ -1,0 +1,32 @@
+{
+    "sections": [{
+        "title": "New York City",
+        "subtitle": "Dynamic Page",
+        "nav": "Intro",
+        "type": "Intro"
+    },{
+        "title": "Where did I took Photos?",
+        "nav": "Photo Map",
+        "type": "Map"
+    },{
+        "title": "Top of the Rock",
+        "nav": "Above NYC",
+        "type": "Image"
+    },{
+        "title": "How much did I walk around?",
+        "nav": "Walking",
+        "type": "Chart"
+    },{
+        "title": "Pepsi Cola Sign",
+        "nav": "Night",
+        "type": "Image"
+    },{
+        "title": "About",
+        "nav": "About",
+        "type": "Text"
+    }],
+
+    "data": {
+
+    }
+}

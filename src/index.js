@@ -1,3 +1,5 @@
+import DashboardConfigProvider from './config/localConfigProvider';
+
 import Map from './components/Map/MultiLayerMap';
 
 import Chart from './components/Chart/Chart';
@@ -8,6 +10,37 @@ import './styles/app.scss';
 
 if (process.env.NODE_ENV !== 'production') {
     console.log('Looks like we are in development mode!');
+}
+
+const DashboardConfig = new DashboardConfigProvider();
+const config = DashboardConfig.getConfig();
+
+// Dynamic Intro Page
+document.querySelector("#title").innerHTML = config.title;
+document.querySelector("#subtitle").innerHTML = config.subtitle;
+
+// Navigation
+const navBox = document.getElementById("navBox");
+config.sections.forEach((section, idx)=> {
+    // NavBox
+    navBox.innerHTML += createNavItem(section.nav,idx,idx==0).outerHTML;
+
+    // Section
+
+
+})
+
+
+function createNavItem(text, idx, active) {
+    const div = document.createElement("div");
+    div.setAttribute("data-index",idx);
+    
+    div.classList.add("nav-item");
+    if(active) div.classList.add("nav-item-active");
+
+    const t = document.createTextNode("- "+text+" -");
+    div.appendChild(t);
+    return div;
 }
 
 /*
