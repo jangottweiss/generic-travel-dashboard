@@ -1,0 +1,204 @@
+@import "@material/button/mdc-button";
+@import 'theme';
+@import 'chart';
+@import 'animation';
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-weight: 500;
+  font-family: 'HelveticaNeue';
+}
+
+section {
+  width: 100%;
+  padding: 0 7%;
+  display: table;
+  margin: 0;
+  max-width: none;
+  background-color: $primary-color;
+  height: 100vh;
+  &:nth-of-type(2n) {
+    background-color: $secondary-color;
+  }
+}
+
+// Section specific classes
+.intro {
+  height: 100vh;
+  background-image: url('../assets/head.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.end {
+  height: 100vh;
+}
+
+.scroll-hint {
+  // background-color: rgba( $primary-color-light, 0.5);
+  color: $primary-color-text;
+  position: absolute;
+  text-align: center;
+  text-transform: uppercase;
+  bottom: 0;
+  right: 50%;
+  height: 40px;
+  width: 200px;
+  padding-top: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-top: 15px;
+  margin-right: -100px; // animation: mdc-animation-enter(bounce, 2500ms);
+  @include animation-name(bounce);
+  @include animation-duration(2s);
+  @include animation-iteration-count(infinite);
+  @include animation-direction(alternate);
+}
+
+.content {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+h1 {
+  font-size: 3em;
+  display: block;
+  font-weight: 300;
+}
+
+h2 {
+  font-size: 2em;
+  display: block;
+  font-weight: 300;
+}
+
+section h1,
+h2 {
+  color: $primary-color-text;
+}
+
+section:nth-of-type(2n) h1 {
+  color: $secondary-color-text;
+}
+
+section:nth-of-type(2n) h2 {
+  color: $secondary-color-text;
+}
+
+.section-text {
+  color: $primary-color-text;
+}
+section:nth-of-type(2n) .section-text {
+  color: $secondary-color-text;
+}
+
+a {
+  font-weight: 700;
+  color: #373B44;
+  position: relative;
+  &:hover {
+    opacity: 0.8;
+  }
+  &:active {
+    top: 1px;
+  }
+}
+
+footer {
+  padding: 1% 5%;
+  text-align: center;
+  background-color: #373B44;
+  color: white;
+  a {
+    color: #FE4B74;
+    font-weight: 500;
+    text-decoration: none;
+  }
+}
+
+#map-container-1 {
+  width: 95%;
+  height: 75vh;
+  margin: 0 auto
+}
+#chart-container-1 {
+  width: 95%;
+  height: 75vh;
+  margin: 0 auto
+}
+
+#container2 {
+  min-width: 310px;
+  max-width: 800px;
+  height: 400px;
+  margin: 0 auto
+}
+
+.image {
+  width: 95%;
+  height: 75vh;
+  margin: 0 auto
+}
+
+.section-image {
+  height: 100%; width: 95%;
+} 
+
+.object-fit_fill { object-fit: fill }
+.object-fit_contain { object-fit: contain;}
+.object-fit_cover { object-fit: cover }
+.object-fit_none { object-fit: none }
+.object-fit_scale-down { object-fit: scale-down }
+
+.side-nav {
+  background-color: rgba( $primary-color-light, 0.2);
+  position: fixed;
+  top: 50%;
+  margin-top: -10vh;
+  margin-right: 15px;
+  height: 20vh;
+  right: 0;
+  padding-right: 15px;
+  padding-left: 15px;
+  width: 150px;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.side-nav:hover {
+  background-color: rgba( $primary-color, 1);
+}
+
+.side-nav:hover .nav-item {
+  opacity: 0.8;
+}
+
+.nav-item {
+  cursor: pointer;
+  color: $primary-color-text;
+  opacity: 0.4;
+}
+
+.nav-item:hover {
+  opacity: 1;
+  font-weight: bolder;
+}
+
+.nav-item-active {
+  opacity: 1;
+  font-weight: bold;
+}
+
+.flex-nav {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+

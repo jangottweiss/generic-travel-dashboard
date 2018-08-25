@@ -1,0 +1,76 @@
+@import "~highcharts/css/highcharts";
+
+// http://code.highcharts.com/css/themes/dark-unica.css
+
+.highcharts-background {
+  fill: none;
+}
+
+.highcharts-point {
+  stroke-width: 0px;
+}
+
+.highcharts-color-0 {
+  fill: $secondary-color-light;  
+}
+.highcharts-color-1 {
+  fill: $secondary-color;  
+}
+.highcharts-color-2 {
+  fill: $secondary-color-dark;  
+}
+
+section:nth-of-type(2n) .highcharts-color-0 {
+  fill: $primary-color-light;  
+}
+section:nth-of-type(2n) .highcharts-color-1 {
+  fill: $primary-color;  
+}
+section:nth-of-type(2n) .highcharts-color-2 {
+  fill: $primary-color-dark;  
+}
+
+.highcharts-axis-labels {
+  fill: $primary-color-text;
+  cursor: default;
+  font-size: 0.9em;
+}
+section:nth-of-type(2n) .highcharts-axis-labels {
+  fill: $secondary-color-text;
+}
+
+.highcharts-axis-title {
+  fill: $primary-color-text;
+}
+section:nth-of-type(2n) .highcharts-axis-title {
+  fill: $secondary-color-text;
+}
+
+
+/* Credits */
+.highcharts-credits {
+  cursor: pointer;
+  fill: $primary-color-text;
+  font-size: 0.7em;
+  transition: fill 250ms, font-size 250ms;
+}
+section:nth-of-type(2n) .highcharts-credits {  
+  fill: $secondary-color-text;  
+}
+
+.highcharts-legend-item text{
+  fill: $primary-color-text;
+}
+.highcharts-legend-item:hover text {
+  fill: $primary-color-text;
+  font-weight: bolder;
+}
+
+
+section:nth-of-type(2n) .highcharts-legend-item text {
+  fill: $secondary-color-text;
+}
+section:nth-of-type(2n) .highcharts-legend-item:hover text {
+  fill: $secondary-color-text;
+  font-weight: bolder;
+}
