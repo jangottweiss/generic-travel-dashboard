@@ -3,9 +3,10 @@ import DashboardConfigProvider from './config/localConfigProvider';
 import Map from './components/Map/MultiLayerMap';
 
 import Chart from './components/Chart/Chart';
-import chartConfig from './components/Chart/ChartConfig';
 
-import geoData from './data/ImagesTakenAll.json';
+
+import Intro from './components/Intro/Intro';
+
 import './styles/app.scss';
 
 if (process.env.NODE_ENV !== 'production') {
@@ -15,33 +16,128 @@ if (process.env.NODE_ENV !== 'production') {
 const DashboardConfig = new DashboardConfigProvider();
 const config = DashboardConfig.getConfig();
 
-// Dynamic Intro Page
-document.querySelector("#title").innerHTML = config.title;
-document.querySelector("#subtitle").innerHTML = config.subtitle;
+const intro = new Intro();
 
 // Navigation
 const navBox = document.getElementById("navBox");
-config.sections.forEach((section, idx)=> {
-    // NavBox
-    navBox.innerHTML += createNavItem(section.nav,idx,idx==0).outerHTML;
 
-    // Section
+// Sections - Page Content
+const sectionsEle = document.getElementById("sections");
 
+config.sections.forEach((section, idx) => {
+    // Add NavBox Element
+    navBox.innerHTML += createNavItem(section.nav, idx, idx == 0).outerHTML;
 
+    // Add Section depending on the section type
+    switch (section.type) {
+        case "Intro":
+            sectionsEle.innerHTML += createIntroSection(section).outerHTML;
+            break;
+        case "Map":
+            sectionsEle.innerHTML += createMapSection(section).outerHTML;
+            // Wait for the next loop so the required html element is rendered
+            window.setTimeout(_ => {
+                const map = new Map(section.mapData.general);
+                const sources = [{
+                    name: "geo",
+                    src: {
+                        "type": "geojson",
+                        "data": DashboardConfig.getData(section.mapData.dataId)
+                    }
+                }];
+                map.createLayerMap(sources, section.mapData.layers);
+            }, 0)
+
+            break;
+        case "Chart":
+            sectionsEle.innerHTML += createChartSection(section).outerHTML;
+            // Wait for the next loop so the required html element is rendered
+            window.setTimeout(_ => {
+                const chart = new Chart(section.chartData.container);
+                chart.createChart(DashboardConfig.getData(section.chartData.dataId));
+            })
+            break;
+        case "Image":
+            sectionsEle.innerHTML += createImageSection(section).outerHTML;
+            break;
+        default:
+            break;
+    }
 })
-
 
 function createNavItem(text, idx, active) {
     const div = document.createElement("div");
-    div.setAttribute("data-index",idx);
-    
-    div.classList.add("nav-item");
-    if(active) div.classList.add("nav-item-active");
+    div.setAttribute("data-index", idx);
 
-    const t = document.createTextNode("- "+text+" -");
+    div.classList.add("nav-item");
+    if (active) div.classList.add("nav-item-active");
+
+    const t = document.createTextNode("- " + text + " -");
     div.appendChild(t);
     return div;
 }
+
+function createIntroSection(section) {
+    return intro.createIntroSection(section.title, section.subtitle, true);
+}
+
+function createMapSection(section) {
+    const mapSection = document.createElement("section");
+    const wrapper = document.createElement("div");
+    const mapTitle = document.createElement("h1");
+    mapTitle.appendChild(document.createTextNode(section.title));
+
+    const mapContainer = document.createElement("div");
+    mapContainer.setAttribute("id", section.mapData.general.container);
+
+    wrapper.appendChild(mapTitle);
+    wrapper.appendChild(mapContainer);
+    mapSection.appendChild(wrapper);
+
+    return mapSection;
+}
+
+function createChartSection(section) {
+    const chartSection = document.createElement("section");
+    const chartWrapper = document.createElement("div");
+    const chartTitle = document.createElement("h1");
+    chartTitle.appendChild(document.createTextNode(section.title));
+
+    const chartContainer = document.createElement("div");
+    chartContainer.setAttribute("id", section.chartData.container);
+    chartContainer.classList.add("chart-container");
+
+    chartSection.appendChild(chartWrapper);
+    chartWrapper.appendChild(chartTitle);
+    chartWrapper.appendChild(chartContainer);
+
+    return chartSection;
+}
+
+function createImageSection(section) {
+    const imgsection = document.createElement("section");
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("content");
+    const imgWrapper = document.createElement("div");
+    imgWrapper.classList.add("image");
+
+    const img = document.createElement("img");
+    img.classList.add("section-image");
+    img.classList.add("object-fit_contain");
+    img.setAttribute("src", section.image);
+
+    const title = document.createElement("h1");
+    title.appendChild(document.createTextNode(section.title));
+
+    imgWrapper.appendChild(img);
+    wrapper.appendChild(title);
+    wrapper.appendChild(imgWrapper);
+    imgsection.appendChild(wrapper);
+
+    return imgsection;
+}
+
+
 
 /*
  *  Keyboard scrolling logic
@@ -107,67 +203,67 @@ window.addEventListener('scroll', function (e) {
 });
 
 
-/*
- * MAP - All images mapped
- */
+// /*
+//  * MAP - All images mapped
+//  */
 
- // General map settings
-const imageMapSettings = {
-    container: 'map-container-1',
-    style: 'mapbox://styles/mapbox/streets-v9',
-    center: [-73.98938, 40.73061],
-    zoom: 12,
-    scrollZoom: false
-}
+//  // General map settings
+// const imageMapSettings = {
+//     container: 'map-container-1',
+//     style: 'mapbox://styles/mapbox/streets-v9',
+//     center: [-73.98938, 40.73061],
+//     zoom: 12,
+//     scrollZoom: false
+// }
 
-// Convert timestamp
-geoData.features = geoData.features.map((e) => {
-    e.properties.unix = new Date(e.properties.date).getTime()
-    return e;
-})
+// // Convert timestamp
+// geoData.features = geoData.features.map((e) => {
+//     e.properties.unix = new Date(e.properties.date).getTime()
+//     return e;
+// })
 
-// Create new Map Object
-const ImageMapAll = new Map(imageMapSettings);
+// // Create new Map Object
+// const ImageMapAll = new Map(imageMapSettings);
 
-// Specific data driven map config
-const sources = [{
-    name: "geo",
-    src: {
-        "type": "geojson",
-        "data": geoData
-    }
-}];
-const layers = [{
-    name: "imagePointLayer",
-    layer: {
-        "id": "point",
-        "source": "geo",
-        "type": "circle",
-        "paint": {
-            "circle-radius": 3,
-            "circle-color": {
-                property: "unix",
-                colorSpace: "rgb",
-                type: "exponential",
-                stops: [
-                    [1530218767000, "#63a3c1"],
-                    [1530876656610, "#0f1f27"]
-                ]
-            }
-        }
-    }
-}];
+// // Specific data driven map config
+// const sources = [{
+//     name: "geo",
+//     src: {
+//         "type": "geojson",
+//         "data": geoData
+//     }
+// }];
+// const layers = [{
+//     name: "imagePointLayer",
+//     layer: {
+//         "id": "point",
+//         "source": "geo",
+//         "type": "circle",
+//         "paint": {
+//             "circle-radius": 3,
+//             "circle-color": {
+//                 property: "unix",
+//                 colorSpace: "rgb",
+//                 type: "exponential",
+//                 stops: [
+//                     [1530218767000, "#63a3c1"],
+//                     [1530876656610, "#0f1f27"]
+//                 ]
+//             }
+//         }
+//     }
+// }];
 
-// Create layer based on the created map object
-ImageMapAll.createLayerMap(sources, layers);
+// // Create layer based on the created map object
+// ImageMapAll.createLayerMap(sources, layers);
 
 
-/*
- * CHART 
- */
+// /*
+//  * CHART 
+//  */
 
- // Create a new Chart object
-const StepChart = new Chart("chart-container-1");
+//  // Create a new Chart object
+// const StepChart = new Chart("chart-container-1");
 
-// Create a new chart with config
-StepChart.createChart(chartConfig.stepChart)
+// // Create a new chart with config
+// StepChart.createChart(chartConfig.stepChart)
