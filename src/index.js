@@ -1,11 +1,15 @@
+// STATIC - No API
 import DashboardConfigProvider from './config/localConfigProvider';
+
+// REMOTE - Use API for config
+// import DashboardConfigProvider from './config/remoteConfigProvider';
 
 import Map from './components/Map/MultiLayerMap';
 
 import Chart from './components/Chart/Chart';
 
-
 import Intro from './components/Intro/Intro';
+const intro = new Intro();
 
 import './styles/app.scss';
 
@@ -13,57 +17,70 @@ if (process.env.NODE_ENV !== 'production') {
     console.log('Looks like we are in development mode!');
 }
 
+// STATIC - No API
 const DashboardConfig = new DashboardConfigProvider();
 const config = DashboardConfig.getConfig();
 
-const intro = new Intro();
 
-// Navigation
-const navBox = document.getElementById("navBox");
+// REMOTE - Use API for config
+//const DashboardConfig = new DashboardConfigProvider("http://localhost:3000");
+//DashboardConfig.getConfig(getParameterByName('id')).then(config => {
+//    render(config);
+//});
 
-// Sections - Page Content
-const sectionsEle = document.getElementById("sections");
+function render(config) {
 
-config.sections.forEach((section, idx) => {
-    // Add NavBox Element
-    navBox.innerHTML += createNavItem(section.nav, idx, idx == 0).outerHTML;
 
-    // Add Section depending on the section type
-    switch (section.type) {
-        case "Intro":
-            sectionsEle.innerHTML += createIntroSection(section).outerHTML;
-            break;
-        case "Map":
-            sectionsEle.innerHTML += createMapSection(section).outerHTML;
-            // Wait for the next loop so the required html element is rendered
-            window.setTimeout(_ => {
-                const map = new Map(section.mapData.general);
-                const sources = [{
-                    name: "geo",
-                    src: {
-                        "type": "geojson",
-                        "data": DashboardConfig.getData(section.mapData.dataId)
-                    }
-                }];
-                map.createLayerMap(sources, section.mapData.layers);
-            }, 0)
 
-            break;
-        case "Chart":
-            sectionsEle.innerHTML += createChartSection(section).outerHTML;
-            // Wait for the next loop so the required html element is rendered
-            window.setTimeout(_ => {
-                const chart = new Chart(section.chartData.container);
-                chart.createChart(DashboardConfig.getData(section.chartData.dataId));
-            })
-            break;
-        case "Image":
-            sectionsEle.innerHTML += createImageSection(section).outerHTML;
-            break;
-        default:
-            break;
-    }
-})
+    // Navigation
+    const navBox = document.getElementById("navBox");
+
+    // Sections - Page Content
+    const sectionsEle = document.getElementById("sections");
+
+    config.sections.forEach((section, idx) => {
+        // Add NavBox Element
+        navBox.innerHTML += createNavItem(section.nav, idx, idx == 0).outerHTML;
+
+        // Add Section depending on the section type
+        switch (section.type) {
+            case "Intro":
+                sectionsEle.innerHTML += createIntroSection(section).outerHTML;
+                break;
+            case "Map":
+                sectionsEle.innerHTML += createMapSection(section).outerHTML;
+                // Wait for the next loop so the required html element is rendered
+                window.setTimeout(_ => {
+                    const map = new Map(section.mapData.general);
+                    const sources = [{
+                        name: "geo",
+                        src: {
+                            "type": "geojson",
+                            "data": DashboardConfig.getData(section.mapData.dataId)
+                        }
+                    }];
+                    map.createLayerMap(sources, section.mapData.layers);
+                }, 0)
+
+                break;
+            case "Chart":
+                sectionsEle.innerHTML += createChartSection(section).outerHTML;
+                // Wait for the next loop so the required html element is rendered
+                window.setTimeout(_ => {
+                    const chart = new Chart(section.chartData.container);
+                    chart.createChart(DashboardConfig.getData(section.chartData.dataId));
+                })
+                break;
+            case "Image":
+                sectionsEle.innerHTML += createImageSection(section).outerHTML;
+                break;
+            default:
+                break;
+        }
+    })
+}
+
+
 
 function createNavItem(text, idx, active) {
     const div = document.createElement("div");
@@ -136,8 +153,7 @@ function createImageSection(section) {
 
     return imgsection;
 }
-
-
+render(config);
 
 /*
  *  Keyboard scrolling logic
@@ -202,68 +218,12 @@ window.addEventListener('scroll', function (e) {
     }
 });
 
-
-// /*
-//  * MAP - All images mapped
-//  */
-
-//  // General map settings
-// const imageMapSettings = {
-//     container: 'map-container-1',
-//     style: 'mapbox://styles/mapbox/streets-v9',
-//     center: [-73.98938, 40.73061],
-//     zoom: 12,
-//     scrollZoom: false
-// }
-
-// // Convert timestamp
-// geoData.features = geoData.features.map((e) => {
-//     e.properties.unix = new Date(e.properties.date).getTime()
-//     return e;
-// })
-
-// // Create new Map Object
-// const ImageMapAll = new Map(imageMapSettings);
-
-// // Specific data driven map config
-// const sources = [{
-//     name: "geo",
-//     src: {
-//         "type": "geojson",
-//         "data": geoData
-//     }
-// }];
-// const layers = [{
-//     name: "imagePointLayer",
-//     layer: {
-//         "id": "point",
-//         "source": "geo",
-//         "type": "circle",
-//         "paint": {
-//             "circle-radius": 3,
-//             "circle-color": {
-//                 property: "unix",
-//                 colorSpace: "rgb",
-//                 type: "exponential",
-//                 stops: [
-//                     [1530218767000, "#63a3c1"],
-//                     [1530876656610, "#0f1f27"]
-//                 ]
-//             }
-//         }
-//     }
-// }];
-
-// // Create layer based on the created map object
-// ImageMapAll.createLayerMap(sources, layers);
-
-
-// /*
-//  * CHART 
-//  */
-
-//  // Create a new Chart object
-// const StepChart = new Chart("chart-container-1");
-
-// // Create a new chart with config
-// StepChart.createChart(chartConfig.stepChart)
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
